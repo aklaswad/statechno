@@ -19,15 +19,15 @@ __DATA__
 <link rel="stylesheet" href="/style" />
 <p>
   <button data-status="200">200</button>
-  auto <input data-status="200" type="checkbox" /> <input class="status-200" value="1" /> per second
+  auto <input data-status="200" type="checkbox" /> <input class="status-200" type="number" value="1" /> per second
 </p>
 <p>
   <button data-status="400">400</button>
-  auto <input data-status="400" type="checkbox" /> <input class="status-400" value="1" /> per second
+  auto <input data-status="400" type="checkbox" /> <input class="status-400" type="number" value="1" /> per second
 </p>
 <p>
   <button data-status="500">500</button>
-  auto <input data-status="500" type="checkbox" /> <input class="status-500" value="1" /> per second
+  auto <input data-status="500" type="checkbox" /> <input class="status-500" type="number" value="1" /> per second
 </p>
 
 @@ /js

@@ -47,9 +47,9 @@ $( function () {
       var runner = function () {
         callit(status);
         if ( $that.is(':checked') ) {
-          var rps = parseInt( $('.status-' + status).val() );
+          var rps = parseFloat( $('.status-' + status).val() );
           if (rps <= 0 ) rps = 0.0001;
-          setTimeout( runner, 1000 / rps );
+          setTimeout( runner, (1000 / rps) * (0.5 + Math.random() ) );
         }
       };
       runner();

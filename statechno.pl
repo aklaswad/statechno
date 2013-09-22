@@ -4,11 +4,13 @@ use Net::OpenSoundControl;
 use Text::LTSV;
 use AnyEvent;
 use AnyEvent::Handle;
+use Net::OpenSoundControl::Client;
 
 my $p = Text::LTSV->new;
 my $cv = AnyEvent->condvar;
-my ($stats, $last) = ({},{});
-
+my ($stats, $last) = ({},{ gain => 0 });
+my $bpm = 128;
+my $interval = (60 * 1000) / ($bpm * 4); # ms of 1/16 note length
 my $hdl; $hdl = new AnyEvent::Handle
     fh => \*STDIN,
     on_read => sub {
@@ -19,24 +21,25 @@ my $hdl; $hdl = new AnyEvent::Handle
         $hdl->{rbuf} = '';
     };
 
-
-use Net::OpenSoundControl::Client;
-
 my $osc = Net::OpenSoundControl::Client->new(
       Host => "127.0.0.1", Port => 19999)
       or die "Could not start client: $@\n";
 
-
-my $w = AnyEvent->timer( after => 0, interval => 0.12,  cb => sub {
-
+my $w = AnyEvent->timer( after => 0, interval => $interval / 1000,  cb => sub {
     my $success = $stats->{2} || 0;
     my $total = 0;
     $total += $_ for values %$stats;
     my $e4 = $stats->{4} || 0;
     my $e5 = $stats->{5} || 0;
     $stats->{gain} = $last->{gain} * 0.95 + $success * 0.1;
+    $osc->send([ '/hb',
+        'f' => $interval,
+        'i' => $stats->{2} || 0,
+        'i' => $stats->{4} || 0,
+        'i' => $stats->{5} || 0,
+        'f' => $stats->{gain},
+    ]);
     $last = $stats;
-    $osc->send(['/hb', 'i', $total, 'f', $stats->{gain}, 'f', $total ? $e4 / $total : 0, 'f', $total ? $e5 / $total : 0 ]);
     $stats = {};
 
 });
